@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋人机对战</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(15, 2em);
+            grid-template-rows: repeat(15, 2em);
+            gap: 1px;
+            background-color: #f0d9b5;
+            border: 1px solid #000;
+        }
+
+        .intersection {
+            width: 2em;
+            height: 2em;
+            background-color: #78521f;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+
+        .stone {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .blackStone {
+            background-color: #000;
+        }
+
+        .whiteStone {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="board" id="chessBoard">
+        <!-- 五子棋盘交叉点 -->
+    </div>
+    <div id="winMessage"></div>
+    <script>
+        var chessBoard = Array.from({ length: 15 }, () => Array(15).fill(null));
+        var currentPlayer = 'black';
+
+        function renderBoard() {
+            var boardContainer = document.getElementById('chessBoard');
+            boardContainer.innerHTML = '';
+
+            for (var row = 0; row < 15; row++) {
+                for (var col = 0; col < 15; col++) {
+                    var intersection = document.createElement('div');
+                    intersection.className = 'intersection';
+                    intersection.dataset.row = row;
+                    intersection.dataset.col = col;
+
+                    if (chessBoard[row][col] === 'black') {
+                        var stone = document.createElement('div');
+                        stone.className = 'stone blackStone';
+                        intersection.appendChild(stone);
+                    } else if (chessBoard[row][col] === 'white') {
+                        var stone = document.createElement('div');
+                        stone.className = 'stone whiteStone';
+                        intersection.appendChild(stone);
+                    }
+
+                    intersection.addEventListener('click', function (event) {
+                        handleIntersectionClick(event.target);
+                    });
+
+                    boardContainer.appendChild(intersection);
+                }
+            }
+        }
+
+        function handleIntersectionClick(clickedElement) {
+            var intersection = clickedElement.closest('.intersection');
+
+            if (intersection) {
+                var row = parseInt(intersection.dataset.row);
+                var col = parseInt(intersection.dataset.col);
+
+                if (!chessBoard[row][col]) {
+                    chessBoard[row][col] = currentPlayer;
+
+                    renderBoard();
+
+                    var winner = checkWinner(row, col);
+                    if (winner) {
+                        alert(winner + ' wins!');
+                        resetGame();
+                        return;
+                    }
+
+                    currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+
+                    // 让机器使用 MCTS 算法落子
+                    setTimeout(function () {
+                        var machineMove = mcts();
+                        if (machineMove) {
+                            chessBoard[machineMove.row][machineMove.col] = 'white';
+                            renderBoard();
+
+                            var machineWinner = checkWinner(machineMove.row, machineMove.col);
+                            if (machineWinner) {
+                                alert(machineWinner + ' wins!');
+                                resetGame();
+                            }
+
+                            currentPlayer = 'black';
+                        }
+                    }, 500);
+                }
+            }
+        }
+
+        function mcts() {
+            var blackStones = document.querySelectorAll('.blackStone');
+            var blackPositions = Array.from(blackStones).map(stone => ({
+                row: parseInt(stone.parentElement.dataset.row),
+                col: parseInt(stone.parentElement.dataset.col)
+            }));
+
+            var availableMoves = [];
+
+            blackPositions.forEach(position => {
+                for (var i = -1; i <= 1; i++) {
+                    for (var j = -1; j <= 1; j++) {
+                        var newRow = position.row + i;
+                        var newCol = position.col + j;
+
+                        if (
+                            newRow >= 0 && newRow < 15 &&
+                            newCol >= 0 && newCol < 15 &&
+                            !chessBoard[newRow][newCol]
+                        ) {
+                            availableMoves.push({ row: newRow, col: newCol });
+                        }
+                    }
+                }
+            });
+
+            var randomIndex = Math.floor(Math.random() * availableMoves.length);
+            return availableMoves[randomIndex];
+        }
+
+        function checkWinner(row, col) {
+            if (
+                checkLine(row, col, 0, 1) ||
+                checkLine(row, col, 1, 0) ||
+                checkLine(row, col, 1, 1) ||
+                checkLine(row, col, 1, -1)
+            ) {
+                var winner = chessBoard[row][col];
+                console.log('Setting win message:', winner + ' wins!');
+                document.getElementById('winMessage').innerText = winner + ' wins!';
+                return winner;
+            }
+            return null;
+        }
+
+        function checkLine(row, col, deltaRow, deltaCol) {
+            const player = chessBoard[row][col];
+            let count = 1;
+
+            for (let step = 1; step <= 5; step++) {
+
+                const nextRow = row + step * deltaRow;
+                const nextCol = col + step * deltaCol;
+
+                count++;
+
+                if (
+                    nextRow < 0 || nextRow >= chessBoard.length ||
+                    nextCol < 0 || nextCol >= chessBoard[nextRow].length ||
+                    (chessBoard[nextRow][nextCol] !== player)
+                ) {
+                    break;
+                }
+            }
+
+            return count >= 5;
+        }
+
+        function resetGame() {
+            chessBoard = Array.from({ length: 15 }, () => Array(15).fill(null));
+            currentPlayer = 'black';
+            renderBoard();
+        }
+
+        renderBoard();
+    </script>
+</body>
+</html>

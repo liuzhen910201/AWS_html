@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Video Player</title>
+</head>
+<body>
+
+<input type="file" id="videoInput" accept="video/*" onchange="loadVideo()">
+
+<video id="myVideo" width="640" height="360" controls>
+    Your browser does not support the video tag.
+</video>
+
+<input type="range" id="seekbar" value="0" step="1" style="width: 80%;" oninput="seekVideo()">
+
+<script>
+    var video = document.getElementById("myVideo");
+    var seekbar = document.getElementById("seekbar");
+    var videoInput = document.getElementById("videoInput");
+
+    function playPause() {
+        if (video.paused)
+            video.play();
+        else
+            video.pause();
+    }
+
+    function seekVideo() {
+        var seekto = video.duration * (seekbar.value / 100);
+        video.currentTime = seekto;
+    }
+
+    function loadVideo() {
+        var fileInput = videoInput.files[0];
+
+        if (fileInput) {
+            var videoURL = URL.createObjectURL(fileInput);
+            video.src = videoURL;
+        }
+    }
+</script>
+
+<button onclick="playPause()">play/pause</button>
+
+</body>
+</html>

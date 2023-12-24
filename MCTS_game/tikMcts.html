@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe with MCTS</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      border: 1px solid #000;
+      font-size: 2em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="board" id="board">
+  <div class="cell" onclick="placeMarker(0, 0)"></div>
+  <div class="cell" onclick="placeMarker(0, 1)"></div>
+  <div class="cell" onclick="placeMarker(0, 2)"></div>
+  <div class="cell" onclick="placeMarker(1, 0)"></div>
+  <div class="cell" onclick="placeMarker(1, 1)"></div>
+  <div class="cell" onclick="placeMarker(1, 2)"></div>
+  <div class="cell" onclick="placeMarker(2, 0)"></div>
+  <div class="cell" onclick="placeMarker(2, 1)"></div>
+  <div class="cell" onclick="placeMarker(2, 2)"></div>
+</div>
+
+<script>
+  let currentPlayer = 'X';
+  let board = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', '']
+  ];
+
+  function placeMarker(row, col) {
+    if (board[row][col] === '' && !isGameOver()) {
+      board[row][col] = currentPlayer;
+      document.getElementById('board').children[row * 3 + col].innerText = currentPlayer;
+      if (isWinner()) {
+        alert(currentPlayer + ' wins!');
+        resetGame();
+      } else if (isBoardFull()) {
+        alert('It\'s a draw!');
+        resetGame();
+      } else {
+        currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+        if (currentPlayer === 'O') {
+          // It's the computer's turn
+          computerMove();
+        }
+      }
+    }
+  }
+
+  function computerMove() {
+    if (!isGameOver()) {
+      const bestMove = findBestMove();
+      placeMarker(bestMove.row, bestMove.col);
+    }
+  }
+
+  function findBestMove() {
+    // Implement the MCTS algorithm here to find the best move
+    // For simplicity, let's just choose a random available move for now
+    const availableMoves = getAvailableMoves();
+    const randomIndex = Math.floor(Math.random() * availableMoves.length);
+    return availableMoves[randomIndex];
+  }
+
+  function getAvailableMoves() {
+    const moves = [];
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (board[i][j] === '') {
+          moves.push({ row: i, col: j });
+        }
+      }
+    }
+    return moves;
+  }
+
+  function isWinner() {
+    // Check rows, columns, and diagonals for a win
+    for (let i = 0; i < 3; i++) {
+      if (board[i][0] === currentPlayer && board[i][1] === currentPlayer && board[i][2] === currentPlayer) {
+        return true; // Check rows
+      }
+      if (board[0][i] === currentPlayer && board[1][i] === currentPlayer && board[2][i] === currentPlayer) {
+        return true; // Check columns
+      }
+    }
+    if (board[0][0] === currentPlayer && board[1][1] === currentPlayer && board[2][2] === currentPlayer) {
+      return true; // Check diagonal \
+    }
+    if (board[0][2] === currentPlayer && board[1][1] === currentPlayer && board[2][0] === currentPlayer) {
+      return true; // Check diagonal /
+    }
+    return false;
+  }
+
+  function isBoardFull() {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (board[i][j] === '') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function isGameOver() {
+    return isWinner() || isBoardFull();
+  }
+
+  function resetGame() {
+    board = [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', '']
+    ];
+    currentPlayer = 'X';
+    document.getElementById('board').childNodes.forEach(cell => cell.innerText = '');
+  }
+</script>
+
+</body>
+</html>
