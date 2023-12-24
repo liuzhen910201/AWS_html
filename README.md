@@ -30,3 +30,8 @@ http://18.183.224.191/player.html
 
 #### 源代码
 https://github.com/liuzhen910201/AWS_html/blob/main/player/player.html <br>
+#### 效果图
+![](https://github.com/liuzhen910201/AWS_html/blob/main/image/player.png)
+<br>
+更新中...
+<br>
