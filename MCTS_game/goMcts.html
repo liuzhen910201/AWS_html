@@ -52,6 +52,7 @@
         <!-- 五子棋盘交叉点 -->
     </div>
     <div id="winMessage"></div>
+    <button id="restartButton">重启游戏</button>
     <script>
         var chessBoard = Array.from({ length: 15 }, () => Array(15).fill(null));
         var currentPlayer = 'black';
@@ -128,34 +129,86 @@
         }
 
         function mcts() {
-            var blackStones = document.querySelectorAll('.blackStone');
-            var blackPositions = Array.from(blackStones).map(stone => ({
-                row: parseInt(stone.parentElement.dataset.row),
-                col: parseInt(stone.parentElement.dataset.col)
-            }));
+            var lastBlackMove = getLastBlackMove();
+            var availableMoves = calculateAvailableMoves(lastBlackMove);
+            var bestMove = null;
+            var bestScore = -Infinity;
 
+            for (var i = 0; i < availableMoves.length; i++) {
+                var move = availableMoves[i];
+                var score = simulate(move, 10000); // 模拟10000次
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = move;
+                }
+            }
+
+            return bestMove;
+        }
+
+        function getLastBlackMove() {
+            var blackStones = document.querySelectorAll('.blackStone');
+            if (blackStones.length > 0) {
+                var lastBlackStone = blackStones[blackStones.length - 1];
+                return {
+                    row: parseInt(lastBlackStone.parentElement.dataset.row),
+                    col: parseInt(lastBlackStone.parentElement.dataset.col)
+                };
+            } else {
+                // 如果还没有黑子落子，可以选择默认位置或其他逻辑
+                return { row: 7, col: 7 }; // 例如，默认位置为棋盘中央
+            }
+        }
+
+        function calculateAvailableMoves(lastBlackMove) {
             var availableMoves = [];
 
-            blackPositions.forEach(position => {
-                for (var i = -1; i <= 1; i++) {
-                    for (var j = -1; j <= 1; j++) {
-                        var newRow = position.row + i;
-                        var newCol = position.col + j;
+            // 临接位置的相对坐标
+            var neighbors = [
+                { row: -1, col: 0 }, // 上
+                { row: 1, col: 0 },  // 下
+                { row: 0, col: -1 }, // 左
+                { row: 0, col: 1 },  // 右
+                { row: -1, col: -1 }, // 左上
+                { row: -1, col: 1 },  // 右上
+                { row: 1, col: -1 },  // 左下
+                { row: 1, col: 1 }    // 右下
+            ];
 
-                        if (
-                            newRow >= 0 && newRow < 15 &&
-                            newCol >= 0 && newCol < 15 &&
-                            !chessBoard[newRow][newCol]
-                        ) {
-                            availableMoves.push({ row: newRow, col: newCol });
-                        }
-                    }
+            neighbors.forEach(neighbor => {
+                var newRow = lastBlackMove.row + neighbor.row;
+                var newCol = lastBlackMove.col + neighbor.col;
+
+                if (
+                    newRow >= 0 && newRow < 15 &&
+                    newCol >= 0 && newCol < 15 &&
+                    !chessBoard[newRow][newCol]
+                ) {
+                    availableMoves.push({ row: newRow, col: newCol });
                 }
             });
 
-            var randomIndex = Math.floor(Math.random() * availableMoves.length);
-            return availableMoves[randomIndex];
+            return availableMoves;
         }
+
+
+
+        function simulate(move, numSimulations) {
+            // 在这里执行模拟，返回一个分数
+            // 你可以根据需要定义模拟的逻辑
+            // 这里简化为随机生成一个分数
+            var totalScore = 0;
+
+            for (var i = 0; i < numSimulations; i++) {
+                // 模拟的逻辑，可以根据需要修改
+                var score = Math.random(); // 这里简化为随机生成一个分数
+                totalScore += score;
+            }
+
+            return totalScore / numSimulations; // 返回平均分数
+        }
+
 
         function checkWinner(row, col) {
             if (
@@ -200,7 +253,8 @@
             currentPlayer = 'black';
             renderBoard();
         }
-
+        // 添加按钮点击事件监听
+        document.getElementById('restartButton').addEventListener('click', resetGame);
         renderBoard();
     </script>
 </body>
