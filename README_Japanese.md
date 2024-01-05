@@ -22,6 +22,9 @@ https://github.com/liuzhen910201/AWS_html/blob/main/ab/game.js<br>
 更新：評価機能を追加（alpha-beta）
 #### 効果図
 ![](https://github.com/liuzhen910201/AWS_html/blob/main/image/ab_go.png)
+#### 評価効果図
+![](https://github.com/liuzhen910201/AWS_html/blob/main/image/score.png)
+
 #### 現在の問題
 EC2の無料リソースは限られており、AI計算の要件を満たすのが難しいです。また、期待した目標にはまだ達しておらず、アルゴリズムの最適化や計算リソースの増加が必要です。<br>
 勝利を判断する関数が不安定で、さらなる調整が必要です。(解決)<br>
