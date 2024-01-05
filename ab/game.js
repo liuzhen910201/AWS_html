@@ -82,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 aiMove = findBlockingMove(lastMoveRow, lastMoveCol, 1);
             }
 
+            console.log(`AI Move: (${aiMove.row}, ${aiMove.col}), Score: ${evaluate(board, lastMoveRow, lastMoveCol)}`);
+
             // 检查AI选择的位置是否有邻近子
             if (hasNeighbor(aiMove.row, aiMove.col)) {
                 board[aiMove.row][aiMove.col] = 2; // AI的棋子
@@ -326,15 +328,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (playerCount === 0 && opponentCount === 0) {
             return 0;
         }
-        console.log("Array:", array);
+        //console.log("Array:", array);
         // console.log("Row:", row);
         // console.log("Col:", col);
         // console.log("Player Count:", playerCount);
-        console.log("Opponent Count:", opponentCount);
+        //console.log("Opponent Count:", opponentCount);
 
-        if(opponentCount >= 3){
-            console.log("row:"+row+",col:"+col+",count:"+opponentCount)
-        }
+        // if(opponentCount >= 3){
+        //     console.log("row:"+row+",col:"+col+",count:"+opponentCount)
+        // }
         // 调整权重，同时考虑进攻和防守
         let playerScore = Math.pow(10, playerCount) + Math.pow(5, opponentCount);
         let opponentScore = Math.pow(10, opponentCount) + Math.pow(5, playerCount);
