@@ -7,7 +7,7 @@ EC2の無料リソースは限られており、AI計算の要件を満たすの
 
 ### MCTS
 #### 三目並べ
-http://18.183.224.191/tikMcts.html
+http://52.193.216.136/tikMcts.html
 <br>
 #### ソースコード
 https://github.com/liuzhen910201/AWS_html/blob/main/MCTS_game/tikMcts.html<br>
@@ -17,6 +17,7 @@ https://github.com/liuzhen910201/AWS_html/blob/main/MCTS_game/tikMcts.html<br>
 EC2の無料リソースは限られており、AI計算の要件を満たすのが難しいです。また、期待した目標にはまだ達しておらず、アルゴリズムの最適化や計算リソースの増加が必要です。<br>
 
 #### 五目並べ
+http://52.193.216.136/goGame/index.html<br>
 #### ソースコード
 https://github.com/liuzhen910201/AWS_html/blob/main/ab/game.js<br>
 更新：評価機能を追加（alpha-beta）
